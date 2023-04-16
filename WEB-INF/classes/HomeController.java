@@ -17,15 +17,35 @@ public class HomeController extends HttpServlet{
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        HttpSession session = request.getSession();
+        ServletContext context = request.getServletContext();
+        
         if(request.getParameter("new") != null){
-            HttpSession session = request.getSession();
-            ServletContext context = request.getServletContext();
             GameBean game = new GameBean();
             context.setAttribute("game", game);
             response.sendRedirect(request.getContextPath() + "/Game");
         }
         else{
-            // load a new game
+            // Needs extra validation for if file exists
+            GameBean game = null;
+            String username = request.getParameter("username");
+            try {
+                FileInputStream fileIn = new FileInputStream(context.getRealPath("/WEB-INF/saved-games/" + username + ".ser"));
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                game = (GameBean) in.readObject();
+                in.close();
+                fileIn.close();
+            } catch (IOException i) {
+                i.printStackTrace();
+                return;
+            } catch (ClassNotFoundException c) {
+                System.out.println("Username not found");
+                c.printStackTrace();
+                return;
+            }
+
+            context.setAttribute("game", game);
+            response.sendRedirect(request.getContextPath() + "/Game");
         }
     }
 }  
