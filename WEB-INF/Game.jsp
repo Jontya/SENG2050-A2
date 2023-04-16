@@ -1,7 +1,8 @@
 <%
     int secreteNumber = (int) request.getAttribute("secreteNumber");
-    int roundNumber = (int) request.getAttribute("roundNumber");
-    String[] prevGuesses = (String[]) request.getAttribute("prevGuesses");
+    int roundNumber = (int) request.getAttribute("roundNumber") + 1;
+    String prevGuesses = (String) request.getAttribute("prevGuesses");
+    String highLow = (String) request.getAttribute("highLow");
 %>
 
 <!DOCTYPE html>
@@ -12,28 +13,24 @@
 </head>
     <body>
         <h1>Guess The Secrete Number</h1>
+        <h2>Round: <%= roundNumber%></h2>
         <h2>Previous Guesses</h2>
-        <h2>Round: <%= roundNumber + 1%></h2>
-        <%
-            if(prevGuesses[0] != null){
-                for(int i = 0; i < prevGuesses.length; i++){
-                    if(prevGuesses[i] == null){
-                        break;
-                    }
-                    else{
-                        %><%= prevGuesses[i] %>, <%
-                    }
-                }
-            }
-            else{
-                %><p>No Previous Guesses</p><%
-            }
-        %>
+        <p><%= prevGuesses %></p>
+
+        <% if(!highLow.equals("")){
+            %>
+            <h2>Higher Or Lower</h2>
+            <p><%= highLow %></p>
+            <%
+        }%>
+    
         <p><%= secreteNumber %></p>
 
         <form action="/SENG2050-A2/Game" method="POST">
             <input type='text' name='guess'>
             <input type='submit' value='Submit' name='sumbit'/>
+
+            <input type='text' name='username'>
             <input type='submit' value='Save' name='save'/>
         </form>
     </body>
