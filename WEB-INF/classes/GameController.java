@@ -16,6 +16,7 @@ public class GameController extends HttpServlet{
         request.setAttribute("secreteNumber", game.getSecreteNumber());
         request.setAttribute("prevGuesses", game.getPrevGuesses());
         request.setAttribute("roundNumber", game.getRound());
+        request.setAttribute("highLow", game.getHighLow());
 
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/Game.jsp");
         dispatcher.forward(request, response);
@@ -27,9 +28,10 @@ public class GameController extends HttpServlet{
         GameBean game = (GameBean) context.getAttribute("game");
         
         if(request.getParameter("save") != null){
-            String username = "test";
+            String username = request.getParameter("username");
+            // Need to do username validation
             try{
-                FileOutputStream fileOut = new FileOutputStream(context.getRealPath("/WEB-INF/saved-games/username.ser"));
+                FileOutputStream fileOut = new FileOutputStream(context.getRealPath("/WEB-INF/saved-games/" + username + ".ser"));
                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
                 out.writeObject(game);
                 out.close();
@@ -37,11 +39,14 @@ public class GameController extends HttpServlet{
             } catch(IOException i){
                 i.printStackTrace();
             }
+
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/Home.jsp");
+            dispatcher.forward(request, response);
         }
         else{
             int guess = Integer.parseInt(request.getParameter("guess"));
 
-            String[] prevGuesses = game.getPrevGuesses();
+            String[] prevGuesses = game.getGuessList();
             boolean valid = true;
 
             // Need to do guess validation...
@@ -61,7 +66,12 @@ public class GameController extends HttpServlet{
 
             if(valid){
                 if(guess == game.getSecreteNumber()){
-                    // end game
+                    request.setAttribute("secreteNumber", game.getSecreteNumber());
+                    request.setAttribute("roundNumber", game.getRound());
+                    request.setAttribute("points", game.getPoints());
+
+                    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/End.jsp");
+                    dispatcher.forward(request, response);
                 }
                 else{
                     game.addNewGuess(Integer.toString(guess));
