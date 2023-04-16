@@ -1,0 +1,97 @@
+html{
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #252a34;
+    color: #eaeaea;
+    font-family: -apple-system,BlinkMacSystemFont,"Roboto","Segoe UI","Helvetica Neue","Lucida Grande",Arial,sans-serif;
+}
+
+.main-container{
+    margin-inline: auto;
+    width: min(90%, 90%);
+    height: auto;
+}
+
+.main-title, .sec-title{
+    text-align: center;
+    text-decoration: underline;
+}
+
+.game-para{
+    text-align: center;
+}
+
+.end-title{
+    text-align: center;
+    font-weight: bold;
+}
+
+.error{
+    color: red;
+    text-align: center;
+}
+
+#new-game, #load-game{
+    all: unset;
+    text-align: center;
+    font-weight: bold;
+    background-color: #eaeaea;
+    color: #252a34;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#new-game{
+    display: block;
+    margin: 0 auto;
+    width: 32%;
+}
+
+#load-game{
+    display: inline-block;
+    margin: 0 auto;
+    width: 10%;
+}
+
+#username, #game-guess, #game-username{
+    all: unset;
+    background-color: #eaeaea;
+    color: #252a34;;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    margin-left: 33.3%;
+    width: 20%;
+}
+
+#end-home{
+    all: unset;
+    text-align: center;
+    font-weight: bold;
+    background-color: #eaeaea;
+    color: #252a34;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    width: 20%;
+}
+
+#game-submit, #game-save{
+    all: unset;
+    text-align: center;
+    font-weight: bold;
+    background-color: #eaeaea;
+    color: #252a34;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    width: 10%;
+}
+
