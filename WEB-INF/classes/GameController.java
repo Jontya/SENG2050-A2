@@ -18,6 +18,11 @@ public class GameController extends HttpServlet{
         request.setAttribute("roundNumber", game.getRound());
         request.setAttribute("highLow", game.getHighLow());
 
+        if(request.getParameter("success").equals("false")){
+            String errorString = (String) context.getAttribute("errorString");
+            request.setAttribute("errorString", errorString);
+        }
+
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/Game.jsp");
         dispatcher.forward(request, response);
     }
@@ -29,32 +34,87 @@ public class GameController extends HttpServlet{
         
         if(request.getParameter("save") != null){
             String username = request.getParameter("username");
-            // Need to do username validation
-            try{
-                FileOutputStream fileOut = new FileOutputStream(context.getRealPath("/WEB-INF/saved-games/" + username + ".ser"));
-                ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                out.writeObject(game);
-                out.close();
-                fileOut.close();
-            } catch(IOException i){
-                i.printStackTrace();
+            ArrayList<String> nameErrors = new ArrayList<>();
+            boolean valid = true;
+
+            // Username must not be empty
+            if(username.length() == 0){
+                valid = false;
+                nameErrors.add("Not be left blank");
             }
 
-            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/Home.jsp");
-            dispatcher.forward(request, response);
+            // Username must be one word
+            String[] validUsername = username.split(" ");
+            if(validUsername.length > 1){
+                valid = false;
+                nameErrors.add("Only contain one word");
+            }
+
+            // Username must not contain any numbers or special characters
+            if(!username.matches("[a-zA-Z]+")){
+                valid = false;
+                nameErrors.add("Not contain any numbers");
+            }
+
+            if(valid){
+                try{
+                    FileOutputStream fileOut = new FileOutputStream(context.getRealPath("/WEB-INF/saved-games/" + username + ".ser"));
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                    out.writeObject(game);
+                    out.close();
+                    fileOut.close();
+                } catch(IOException i){
+                    i.printStackTrace();
+                }
+
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/Home.jsp");
+                dispatcher.forward(request, response);
+            }
+            else{
+                String errorString = "The username must: ";
+                for(int i = 0; i < nameErrors.size(); i++){
+                    errorString += nameErrors.get(i) + ", ";
+                }
+                context.setAttribute("errorString", errorString);
+                response.sendRedirect(request.getContextPath() + "/Game?success=false");
+            }
+
         }
         else{
-            int guess = Integer.parseInt(request.getParameter("guess"));
+            String guess = request.getParameter("guess");
+            ArrayList<String> guessErrors = new ArrayList<String>();
 
             String[] prevGuesses = game.getGuessList();
             boolean valid = true;
 
-            // Need to do guess validation...
+            // 1. Validate one word
+            String[] validWord = guess.split(" ");
+            if(validWord.length > 1){
+                guessErrors.add("Must only contain one number");
+                valid = false;
+            }
+
+            // Remove white space from the end of the string;
+            guess = guess.replaceAll("\\s", "");
+
+            // Checks that the string is a number;
+            if (!guess.matches("[0-9]+")){
+                guessErrors.add("Only contain numbers");
+                valid = false;
+            }
+            else{
+                // Number is not within bounds
+                int guessValid = Integer.parseInt(guess);
+                if(guessValid < 1 || guessValid > 11){
+                    guessErrors.add("Within the bounds of 1-11");
+                    valid = false;
+                }
+            }
 
             for(int i = 0; i < prevGuesses.length; i++){
                 if(prevGuesses[i] != null){
-                    if(guess == Integer.parseInt(prevGuesses[i])){
-                        // Error number has already been guessed this game
+                    if(guess.equals(prevGuesses[i])){
+                        guessErrors.add("Not have been nominated in a previous round");
                         valid = false;
                         break;
                     }
@@ -65,7 +125,7 @@ public class GameController extends HttpServlet{
             }
 
             if(valid){
-                if(guess == game.getSecreteNumber()){
+                if(Integer.parseInt(guess) == game.getSecreteNumber()){
                     request.setAttribute("secreteNumber", game.getSecreteNumber());
                     request.setAttribute("roundNumber", game.getRound());
                     request.setAttribute("points", game.getPoints());
@@ -74,12 +134,20 @@ public class GameController extends HttpServlet{
                     dispatcher.forward(request, response);
                 }
                 else{
-                    game.addNewGuess(Integer.toString(guess));
+                    game.addNewGuess(guess);
                     game.incRound();
                 }
+                request.setAttribute("errorString", "");
+                response.sendRedirect(request.getContextPath() + "/Game?success=true");
             }
-
-            doGet(request, response);
+            else{
+                String errorString = "The guess must: ";
+                for(int i = 0; i < guessErrors.size(); i++){
+                    errorString += guessErrors.get(i) + ", ";
+                }
+                context.setAttribute("errorString", errorString);
+                response.sendRedirect(request.getContextPath() + "/Game?success=false");
+            }
         }
     }
 }  
