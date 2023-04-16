@@ -18,6 +18,46 @@ public class GameBean implements Serializable{
         prevGuesses = new String[10];
     }
 
+    public String getHighLow(){
+        String highLow = "";
+        if(prevGuesses[0] == null){
+            return highLow;
+        }
+        else{
+            highLow = "The Secrete Number is: ";
+            for(int i = 0; i < prevGuesses.length; i++){
+                if(prevGuesses[i] == null){
+                    return highLow;
+                }
+
+                if(Integer.parseInt(prevGuesses[i]) > secreteNumber){
+                    highLow += "Less than " + prevGuesses[i] + ", ";
+                }
+                else{
+                    highLow += "Greater than " + prevGuesses[i] + ", ";
+                }
+            }
+            return highLow;
+        }
+    }
+
+    public String getPrevGuesses(){
+        String out = "";
+        if(prevGuesses[0] == null){
+            out = "There have been no previous guesses";
+        }
+        else{
+            for(int i = 0; i < prevGuesses.length; i++){
+                if(prevGuesses[i] == null){
+                    break;
+                }
+
+                out += prevGuesses[i] + ", ";
+            }
+        }
+        return out;
+    }
+
     public String getUsername(){
         return username;
     }
@@ -27,11 +67,7 @@ public class GameBean implements Serializable{
     }
 
     public int getPoints(){
-        return points;
-    }
-
-    public void setPoints(int points){
-        this.points = points;
+        return 100-((round + 1) -1)*10;
     }
 
     public int getSecreteNumber(){
@@ -50,7 +86,8 @@ public class GameBean implements Serializable{
         prevGuesses[round] = guess;
     }
 
-    public String[] getPrevGuesses(){
+    public String[] getGuessList(){
         return prevGuesses;
     }
+
 }
