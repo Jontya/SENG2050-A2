@@ -11,13 +11,15 @@
     <title>Secrete Number</title>
 </head>
     <body>
-        <h1>Congratulations!</h1>
-        <h2>Round: <%= roundNumber + 1%></h2>
-        <h2>Secrete Number: <%= secreteNumber %></h2>
-        <h2>Points: <%= points %></h2>
+        <div class="main-container">
+            <h1>Congratulations!</h1>
+            <h2>Round: <%= roundNumber + 1%></h2>
+            <h2>Secrete Number: <%= secreteNumber %></h2>
+            <h2>Points: <%= points %></h2>
 
-        <form action="/SENG2050-A2/Home" method="GET">
-            <input type='submit' value='Home' name='sumbit'/>
-        </form>
+            <form action="/SENG2050-A2/Home" method="GET">
+                <input type='submit' value='Home' name='sumbit'/>
+            </form>
+        </div>
     </body>
 </html>
